@@ -1,0 +1,90 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Adição de cliente{% endblock %}
+
+{% block body %}
+
+    <div class="col-md-12" style="margin-top: 50px">
+
+         {% for label, messages in app.flashes(['danger', 'success']) %}
+            {% for message in messages %}
+                <div class="alert alert-{{ label }}" role="alert">
+                    {{ message }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            {% endfor %}
+        {% endfor %}
+
+        <div class="row">
+            <div class="col-md-9">
+                <h3>Adicionar Cliente</h3>
+            </div>
+        </div>
+        
+        <form method="post" action="{{ path('app_clientes_create') }}" enctype="multipart/form-data">
+            
+            {{ form_widget(form) }}
+            
+            <div class="form-group">
+                <label for="usuarios_foto">Foto</label><br>
+                <input type="file" class="form-control-file" id="usuarios_foto" name="foto" />
+            </div>
+
+            <div class="pull-right">
+                <a href="{{ path("app_clientes")}}" class="btn btn-light" title="Cancelar"><i class="fa fa-arrow-left"></i>&nbsp;Cancelar</a>
+                <button type="submit" class="btn btn-success" title="Salvar Cliente"><i class="fa fa-save"></i>&nbsp;Salvar Cliente</button>
+            </div>
+        </form>
+
+    </div>
+
+{% endblock %}
+
+{% block javascripts %}
+<script>
+
+    $(document).ready(function(){
+
+        $('.required').each(function() {
+            let text = $(this).text();
+            $(this)
+                .empty()
+                .html("<span style='color:red'>*</span> " + text);
+
+        });
+
+        $('#usuarios_telefone').mask('(00) 0000-0000');
+
+        $("form").validate({
+            rules: {
+                'usuarios[nome]': {
+                    required: true,
+                },
+                'usuarios[email]': {
+                    required: true,
+                    email: true
+                },
+                'usuarios[telefone]': {
+                    required: true,
+                }
+            },
+			messages: {
+                'usuarios[nome]': {
+                    required: 'Campo obrigatório.'
+                },
+				'usuarios[email]': {
+                    required: 'Campo obrigatório.',
+                    email: 'E-mail em formato inválido.'
+                },
+                'usuarios[telefone]': {
+                    required: 'Campo obrigatório.'
+                }
+			}
+        });
+        
+    });
+
+</script>
+{% endblock %}

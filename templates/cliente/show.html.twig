@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Visualizar de cliente{% endblock %}
+
+{% block body %}
+
+    <div class="col-md-12" style="margin-top: 50px">
+
+        <div class="row">
+            <div class="col-md-9">
+                <h3>Cliente - #{{ user.id }}</h3>
+            </div>
+        </div>
+        
+        <table class="table table-striped">
+            <tbody>
+                <tr>
+                    <td>Nome: {{ user.nome }}</td>
+                </tr>
+                <tr>
+                    <td>E-mail: {{ user.email }}</td>
+                </tr>
+                <tr>
+                    <td>Telefone: {{ user.telefone }}</td>
+                </tr>
+                <tr>
+                    <td>
+                        Foto Cliente:<br>
+                        {% if user.foto is not empty %}
+                            <img style="height: auto;max-width: 80%;" src="{{ asset('uploads/' ~ user.foto) }}" alt="Cliente {{ user.nome }}" />
+                        {% else %}
+                            <img style="height: auto;max-width: 80%;" src="{{ asset('uploads/anon.png') }}" />
+                        {% endif %}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="pull-right">
+            <a href="{{ path("app_clientes")}}" class="btn btn-light" title="Cancelar"><i class="fa fa-arrow-left"></i>&nbsp;Voltar</a>
+            <a href="{{ path("app_clientes_edit", {"id": user.id })}}" class="btn btn-info" title="Editar Cliente"><i class="fa fa-edit"></i>&nbsp;Editar Cliente</a>
+        </div>
+
+    </div>
+
+{% endblock %}
