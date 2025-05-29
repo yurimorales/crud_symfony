@@ -1,19 +1,46 @@
 # CRUD Symfony
 
-Projeto que tem por base, ser um CRUD básico utilizando os recursos do framework Symfony.  
+Projeto que tem por base ser um CRUD básico utilizando os recursos do framework Symfony.  
 Versão Symfony: 5.1.7  
-Versão do PHP: 7.2  
+Versão do PHP: 7.4  
 Versão MySQL: 5.7  
 
-## Clonando o projeto  
-Depois de clonar o projeto, verificar se o composer está instalado. Caso não não estiver instalado, instalar o composer na versão mais atual.  
-Logo depois do projeto ser clonado, entrar na pasta do projeto e rodar o comando: composer install  
+## Como rodar o projeto com Docker
 
-## Configuração banco MySQL
-No arquivo na raiz do projeto, encontra-se o arquivo .env, contendo a seguinte linha:  
-```
-DATABASE_URL=mysql://db_user:db_password@127.0.0.1:3306/db_name?serverVersion=5.7
-```
-Basta realizar as mudanças necessárias, apontando para o respectivo banco desejado.  
-Exemplo:  DATABASE_URL=mysql://(usuario):(senha-usuario)@(ipaddress-banco):(porta)/(nome-do-banco)?serverVersion=5.7  
+### 1. Clone o repositório
 
+```bash
+git clone https://github.com/yurimorales/crud_symfony.git
+cd crud_symfony
+```
+
+### 2. Suba os containers
+
+```bash
+docker-compose up --build
+```
+
+A aplicação estará disponível em [http://localhost:8000](http://localhost:8000).
+
+### 3. Instale as dependências (opcional, caso queira rodar comandos manualmente)
+
+Se precisar rodar comandos do Symfony ou Composer dentro do container, utilize:
+
+```bash
+docker-compose exec app bash
+
+# Dentro do container:
+composer install
+composer dump-autoload
+php bin/console doctrine:migrations:migrate
+```
+
+### 4. Configuração do banco de dados
+
+O arquivo `.env` já está configurado para conectar ao banco MySQL do container:
+
+```
+DATABASE_URL=mysql://db_user:db_password@db:3306/db_name?serverVersion=5.7
+```
+
+Se necessário, ajuste conforme sua necessidade.

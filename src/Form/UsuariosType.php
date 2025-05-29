@@ -6,6 +6,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 
 use App\Entity\Usuarios;
 
@@ -32,7 +33,11 @@ class UsuariosType extends AbstractType
                     'maxlength' => 14
                 ]
             ])
-            ;
+            ->add('foto', FileType::class, [
+                'label' => 'Foto',
+                'required' => false,
+                'mapped' => false,
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver)

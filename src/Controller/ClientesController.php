@@ -25,7 +25,7 @@ class ClientesController extends AbstractController
      * @Route("/", name="app_clientes", methods={"GET"})
      */
     public function index()
-    {   
+    {
 
         $em = $this->getDoctrine()->getManager();
         $users = $em->getRepository(Usuarios::class)->findAll();
@@ -33,9 +33,8 @@ class ClientesController extends AbstractController
         return $this->render('cliente/index.html.twig', [
             'users' => $users
         ]);
-
     }
-    
+
     /**
      * @Route("/cliente/create", name="app_clientes_create", methods={"GET", "POST"})
      */
@@ -47,46 +46,41 @@ class ClientesController extends AbstractController
 
         if ($request->isMethod('POST')) {
 
+            $form->handleRequest($request);
+
+            if (!$form->isSubmitted() || !$form->isValid()) {
+                $this->addFlash('danger', 'Formulário inválido!');
+                return $this->redirectToRoute('app_clientes_create');
+            }
+
             try {
 
-                $form->handleRequest($request);
-
                 $user = $form->getData();
+                $file = $form->get('foto')->getData();
 
-                $file = $request->files->get('foto');
-
-                $newFilename = null;
-
-                if (!empty($file)) {
-
+                if ($file) {
                     $filename = $file->getClientOriginalName();
                     $uploadDir = $this->getParameter("kernel.project_dir") . "/public/uploads";
-
                     $newFilename = $this->uploader->upload($uploadDir, $file, $filename);
-
+                    $user->setFoto($newFilename);
                 }
-                
+
                 $em = $this->getDoctrine()->getManager();
-
                 $user->setFoto($newFilename);
-
                 $em->persist($user);
                 $em->flush();
 
                 $this->addFlash('success', 'Cliente adicionado com sucesso!');
                 return $this->redirectToRoute('app_clientes');
-
-            } catch(\Exception $e) {
+            } catch (\Exception $e) {
                 $this->addFlash('danger', 'Falha ao adicionar cliente!');
                 return $this->redirectToRoute('app_clientes_create');
             }
-
         }
 
         return $this->render('cliente/create.html.twig', [
             'form' => $form->createView()
         ]);
-
     }
 
     /**
@@ -96,19 +90,20 @@ class ClientesController extends AbstractController
     {
 
         $form = $this->createForm(UsuariosType::class, $user);
+        $form->handleRequest($request);
 
         if ($request->isMethod('POST')) {
 
             try {
 
-                $form->handleRequest($request);
-                
-                $user = $form->getData();
+                if (!$form->isSubmitted() || !$form->isValid()) {
+                    $this->addFlash('danger', 'Formulário inválido!');
+                    return $this->redirectToRoute('app_clientes_edit', ['id' => $user->getId()]);
+                }
 
-                $file = $request->files->get('foto');
+                $file = $form->get('foto')->getData();
 
-                if (!empty($file)) {
-
+                if ($file) {
                     $uploadDir = $this->getParameter("kernel.project_dir") . "/public/uploads";
 
                     // Remove imagem antiga, caso exista
@@ -117,31 +112,24 @@ class ClientesController extends AbstractController
                     }
 
                     $newFilename = $this->uploader->upload($uploadDir, $file, $file->getClientOriginalName());
-
                     $user->setFoto($newFilename);
-
                 }
-                
+
                 $em = $this->getDoctrine()->getManager();
-                
-                $em->merge($user);
                 $em->flush();
-                
+
                 $this->addFlash('success', 'Cliente editado com sucesso!');
                 return $this->redirectToRoute('app_clientes');
-
-            } catch(\Exception $e) {
+            } catch (\Exception $e) {
                 $this->addFlash('danger', 'Falha ao editar cliente!');
                 return $this->redirectToRoute('app_clientes_edit', ['id' => $user->getId()]);
             }
-
         }
 
         return $this->render('cliente/edit.html.twig', [
             'form' => $form->createView(),
             'user' => $user
         ]);
-        
     }
 
     /**
@@ -167,7 +155,7 @@ class ClientesController extends AbstractController
             // unlink da imagem, caso exista
             $uploadDir = $this->getParameter("kernel.project_dir") . "/public/uploads/";
 
-            if (!empty($user->getFoto()) && file_exists($uploadDir . $user->getFoto())) {
+            if (!empty($user->getFoto()) && file_exists($uploadDir . '/' . $user->getFoto())) {
                 unlink($uploadDir . $user->getFoto());
             }
 
@@ -178,13 +166,11 @@ class ClientesController extends AbstractController
                 'code' => JsonResponse::HTTP_OK,
                 'message' => 'Cliente removido com sucesso!'
             ]);
-            
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             return new JsonResponse([
                 'code' => JsonResponse::HTTP_BAD_REQUEST,
                 'message' => 'Falha ao remover cliente!'
             ]);
         }
     }
-
 }
