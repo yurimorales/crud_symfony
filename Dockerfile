@@ -27,7 +27,7 @@ RUN composer update symfony/flex --no-interaction --prefer-dist --optimize-autol
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader
 
 # Ajusta permissões da pasta var (sempre)
-RUN chown -R www-data:www-data var
+RUN chown -R www-data:www-data var && chmod -R 775 var
 
 # Ajusta permissões da pasta public/uploads (somente se existir)
 RUN [ -d public/uploads ] && \
